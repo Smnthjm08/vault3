@@ -4,6 +4,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html, body {
+  height: 100%;
+  overflow: hidden; 
+}
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
