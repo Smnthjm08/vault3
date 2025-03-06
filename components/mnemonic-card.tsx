@@ -1,51 +1,33 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { generateMnemonic } from "bip39";
-import { Copy, RefreshCw, Key } from "lucide-react";
-import { Button } from "./ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
-import { Input } from "./ui/input";
+import { useState } from "react"
+import { Copy, RefreshCw, Key } from "lucide-react"
+import { Button } from "./ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
+import { Input } from "./ui/input"
 
-export default function MnemonicCard() {
-  const [mnemonic, setMnemonic] = useState<string>("");
-  const [copied, setCopied] = useState<boolean>(false);
+interface MnemonicCardProps {
+  mnemonic: string
+  onRegenerateMnemonic: () => void
+}
 
-  const generateMnemonics = () => {
-    const newMnemonic = generateMnemonic();
-    setMnemonic(newMnemonic);
-  };
+export default function MnemonicCard({ mnemonic, onRegenerateMnemonic }: MnemonicCardProps) {
+  const [copied, setCopied] = useState<boolean>(false)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(mnemonic);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 5000);
-  };
+    navigator.clipboard.writeText(mnemonic)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 5000)
+  }
 
   return (
-    <Card className="w-full max-w-md border-border/40 bg-card/95 shadow-lg">
+    <Card className="w-full max-w-full border-border/40 bg-card/95 shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Mnemonic Phrase</span>
           {mnemonic && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={generateMnemonics}
-              aria-label="Generate new mnemonic"
-            >
+            <Button variant="ghost" size="icon" onClick={onRegenerateMnemonic} aria-label="Generate new mnemonic">
               <RefreshCw className="h-4 w-4" />
             </Button>
           )}
@@ -57,9 +39,7 @@ export default function MnemonicCard() {
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
               {mnemonic.split(" ").map((word, index) => (
                 <div key={index} className="flex items-center">
-                  <span className="mr-1 text-xs text-muted-foreground">
-                    {index + 1}.
-                  </span>
+                  <span className="mr-1 text-xs text-muted-foreground">{index + 1}.</span>
                   <Input
                     type="text"
                     className="w-full rounded-md border border-input bg-background p-2 text-sm"
@@ -70,9 +50,7 @@ export default function MnemonicCard() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">
-              This is your secret wallet recovery phrase. Keep it safe.
-            </p>
+            <p className="text-xs text-muted-foreground">This is your secret wallet recovery phrase. Keep it safe.</p>
           </div>
         ) : (
           <div className="flex h-full flex-col items-center justify-center space-y-4">
@@ -84,7 +62,7 @@ export default function MnemonicCard() {
         )}
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button onClick={generateMnemonics} variant="default">
+        <Button onClick={onRegenerateMnemonic} variant="default">
           {mnemonic ? "Regenerate Secret" : "Generate Secret"}
         </Button>
         {mnemonic && (
@@ -104,5 +82,6 @@ export default function MnemonicCard() {
         )}
       </CardFooter>
     </Card>
-  );
+  )
 }
+
