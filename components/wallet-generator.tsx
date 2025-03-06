@@ -200,7 +200,7 @@ export default function WalletGenerator() {
       )}
       {walletType !== undefined && mnemonic && (
         <div className="container mx-auto px-4 pt-8 max-w-4xl">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
             <AccordionItem
               value="item-1"
               className="border rounded-lg shadow-sm"
