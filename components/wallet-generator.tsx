@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
 import MnemonicCard from "./mnemonic-card";
+import { derivePath } from "ed25519-hd-key";
 import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from "bip39";
 import {
   Accordion,
@@ -11,18 +12,32 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Keypair } from '@solana/web3.js';
+import { ethers } from 'ethers';
+import { Badge } from "./ui/badge";
 
 interface GenerateWalletResult {
   blockIndex: number;
   mnemonic: string;
   walletIndex: number;
-  walletKey: string;
+  privateKey: string;
+  publicKey: string;
+  walletAddress: string;
 }
 
 export default function WalletGenerator() {
   const [wallets, setWallets] = useState<GenerateWalletResult[]>([]);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [walletType, setWalletType] = useState<number | undefined>(undefined);
+  const [copied, setCopied] = useState<number | null>(null);
 
   const router = useRouter();
 
@@ -43,49 +58,74 @@ export default function WalletGenerator() {
   const generateWalletFromMnemonics = (
     blockIndex: number | undefined,
     mnemonic: string,
-    walletIndex: number,
+    walletIndex: number
   ): GenerateWalletResult => {
     if (!blockIndex) {
       throw new Error("Block index is required");
     }
-    
-    const seed = mnemonicToSeedSync(mnemonic);
-    const seedHex = seed.toString("hex");
 
-    return {
-      blockIndex,
-      mnemonic,
-      walletIndex,
-      walletKey: seedHex,
-    };
+    const seed = mnemonicToSeedSync(mnemonic);
+    const path = `m/44'/${blockIndex}'/${walletIndex}'/0'`;
+    console.log("Path:", path);
+
+    // Solana (501)
+    if (blockIndex === 501) {
+      const derivedSeed = derivePath(path, seed.toString("hex")).key;
+      const keypair = Keypair.fromSeed(derivedSeed);
+      const privateKey = Buffer.from(keypair.secretKey).toString('hex');
+      const publicKey = keypair.publicKey.toString();
+
+      return {
+        blockIndex,
+        mnemonic,
+        walletIndex,
+        privateKey,
+        publicKey,
+        walletAddress: publicKey, // solana public key is wallet address
+      };
+    } 
+    // eth (60)
+    else {
+      const hdWallet = ethers.HDNodeWallet.fromMnemonic(
+        ethers.Mnemonic.fromPhrase(mnemonic),
+        path
+      );
+      const privateKey = hdWallet.privateKey.slice(2); // '0x' prefix
+      const publicKey = hdWallet.publicKey.slice(2); // '0x' prefix
+      const walletAddress = hdWallet.address;
+
+      return {
+        blockIndex,
+        mnemonic,
+        walletIndex,
+        privateKey,
+        publicKey,
+        walletAddress,
+      };
+    }
   };
 
   const generateWallet = () => {
     if (!mnemonic) {
-      // If no mnemonic, generate one
       const newMnemonic = generateMnemonic();
       setMnemonic(newMnemonic);
       return;
     }
-    
+
     if (!validateMnemonic(mnemonic)) {
       console.error("Invalid mnemonic");
       router.push("/");
       return;
     }
-    
+
     try {
-      // Generate wallet from mnemonic
       const newWallet = generateWalletFromMnemonics(
         walletType,
         mnemonic,
         wallets.length
       );
-      
-      // Log the wallet key (as requested)
-      console.log("Generated wallet key:", newWallet.walletKey);
-      
-      // Add the new wallet to the list
+
+      console.log("Generated wallet:", newWallet);
       setWallets([...wallets, newWallet]);
     } catch (error) {
       console.error("Error generating wallet:", error);
@@ -102,6 +142,17 @@ export default function WalletGenerator() {
 
   const clearWallets = () => {
     setWallets([]);
+  };
+
+  const clearWallet = (index: number) => {
+    const filteredWallets = wallets.filter((w) => w.walletIndex !== index);
+    setWallets([...filteredWallets]);
+  };
+
+  const copyToClipboard = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopied(index);
+    setTimeout(() => setCopied(null), 2000);
   };
 
   return (
@@ -164,13 +215,12 @@ export default function WalletGenerator() {
           </Accordion>
         </div>
       )}
+
       {mnemonic && (
         <div className="container mx-auto px-4 pt-8 max-w-4xl flex justify-end gap-2">
-          <Button onClick={() => generateWallet()}>
-            Create Wallet
-          </Button>
-          <Button 
-            variant={"destructive"} 
+          <Button onClick={() => generateWallet()}>Create Wallet</Button>
+          <Button
+            variant={"destructive"}
             className="bg-red-600/50"
             onClick={() => clearWallets()}
           >
@@ -178,21 +228,64 @@ export default function WalletGenerator() {
           </Button>
         </div>
       )}
-      
+
       {wallets.length > 0 && (
         <div className="container mx-auto px-4 pt-8 max-w-4xl">
           <h2 className="text-2xl font-bold mb-4">Generated Wallets</h2>
           <div className="border rounded-lg shadow-sm p-4">
-            <ul>
+            <div>
               {wallets.map((wallet, index) => (
-                <li key={index} className="mb-2 p-2 border-b">
-                  <p><strong>Wallet #{index + 1}</strong> ({wallet.blockIndex === 60 ? 'Ethereum' : 'Solana'})</p>
-                  <p className="text-sm text-gray-600 break-all">
-                    Key: {wallet.walletKey.substring(0, 20)}...
-                  </p>
-                </li>
+                <Card key={index} className="mb-4 border">
+                  <CardHeader>
+                    <div className="flex flex-row gap-2 items-center">
+
+                    <CardTitle>
+                      <strong>Wallet #{index + 1}</strong>
+                    </CardTitle>
+                    <CardDescription>
+                      <Badge>
+
+                      {wallet.blockIndex === 60 ? "Ethereum" : "Solana"}
+                      </Badge>
+                    </CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div>
+                      <p className="text-sm font-medium mb-1">Address:</p>
+                      <p className="text-sm text-muted-foreground break-all bg-muted p-2 rounded">
+                        {wallet.walletAddress}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium mb-1">Public Key:</p>
+                      <p className="text-sm text-muted-foreground break-all bg-muted p-2 rounded">
+                        {wallet.publicKey.substring(0, 20)}...
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium mb-1">Private Key:</p>
+                      <p className="text-sm text-muted-foreground break-all bg-muted p-2 rounded">
+                        {wallet.privateKey.substring(0, 20)}...
+                      </p>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end gap-2">
+                    <Button 
+                      onClick={() => copyToClipboard(wallet.walletAddress, index)}
+                    >
+                      {copied === index ? "Copied!" : "Copy Address"}
+                    </Button>
+                    <Button
+                      variant={"secondary"}
+                      onClick={() => clearWallet(wallet.walletIndex)}
+                    >
+                      Delete
+                    </Button>
+                  </CardFooter>
+                </Card>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       )}

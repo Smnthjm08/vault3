@@ -19,7 +19,7 @@ export default function Navbar() {
           <ThemeToggle />
           <Button className="rounded-full text-primary font-semibold" variant={"secondary"}>
             <GithubIcon width={"24"} height={"24"}/>
-            <Link href="https://github.com/smnthjm08/web-based-wallet" target="_blank">
+            <Link href="https://github.com/smnthjm08/valut3" target="_blank">
               Github
             </Link>
           </Button>
