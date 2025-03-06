@@ -4,10 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html, body {
+/* html, body {
   height: 100%;
   overflow: hidden; 
-}
+} */
 
 @theme {
   --font-sans: var(--font-geist-sans);

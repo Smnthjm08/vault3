@@ -17,10 +17,10 @@ export default function Navbar() {
 
         <div className="flex items-center space-x-3">
           <ThemeToggle />
-          <Button className="rounded-full">
-            <GithubIcon width={"24"} height={"24"} />
+          <Button className="rounded-full text-primary font-semibold" variant={"secondary"}>
+            <GithubIcon width={"24"} height={"24"}/>
             <Link href="https://github.com/smnthjm08/web-based-wallet" target="_blank">
-              GitHub
+              Github
             </Link>
           </Button>
         </div>
