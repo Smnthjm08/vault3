@@ -23,6 +23,7 @@ import {
 import { Keypair } from '@solana/web3.js';
 import { ethers } from 'ethers';
 import { Badge } from "./ui/badge";
+import { Eye } from "lucide-react";
 
 interface GenerateWalletResult {
   blockIndex: number;
@@ -171,6 +172,7 @@ export default function WalletGenerator() {
           <div className="flex items-center gap-4 mt-8">
             <Button
               className="font-semibold"
+              variant={"secondary"}
               onClick={() => generateMnemonics(60)}
               size={"lg"}
             >
@@ -260,13 +262,14 @@ export default function WalletGenerator() {
                     <div>
                       <p className="text-sm font-medium mb-1">Public Key:</p>
                       <p className="text-sm text-muted-foreground break-all bg-muted p-2 rounded">
-                        {wallet.publicKey.substring(0, 20)}...
+                        {wallet.publicKey.substring(0, 50)}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium mb-1">Private Key:</p>
-                      <p className="text-sm text-muted-foreground break-all bg-muted p-2 rounded">
-                        {wallet.privateKey.substring(0, 20)}...
+                      <p className="text-sm text-muted-foreground break-all bg-muted p-2 rounded flex justify-between">
+                        {wallet.privateKey.substring(0, 50)}
+                        <Eye width={"16"} height={"16"} className="mr-2"/>
                       </p>
                     </div>
                   </CardContent>

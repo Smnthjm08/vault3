@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ThemeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
-import { GithubIcon } from "lucide-react";
+import { CircleDot, GithubIcon } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -17,12 +17,24 @@ export default function Navbar() {
 
         <div className="flex items-center space-x-3">
           <ThemeToggle />
-            <Link href="https://github.com/Smnthjm08/vault3" target="_blank">
-          <Button className="rounded-full text-primary font-semibold" variant={"secondary"}>
-            <GithubIcon width={"24"} height={"24"}/>
+          <Link
+            href="https://github.com/Smnthjm08/vault3/issues"
+            target="_blank"
+          >
+            <Button className="rounded-full font-semibold" variant={"ghost"}>
+              <CircleDot width={"24"} height={"24"} />
+              Request Feature
+            </Button>
+          </Link>
+          <Link href="https://github.com/Smnthjm08/vault3" target="_blank">
+            <Button
+              className="rounded-full dark:text-primary  font-semibold"
+              variant={"secondary"}
+            >
+              <GithubIcon width={"24"} height={"24"} />
               Github
-          </Button>
-            </Link>
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>

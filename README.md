@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vault3 - Web3 Wallet Generator
 
-## Getting Started
+Vault3 is a simple Web3 wallet generator that allows users to create secure Ethereum (ETH) and Solana (SOL) wallets instantly. No sign-ups required—just generate, secure, and use your keys.
 
-First, run the development server:
+## Features
+
+- Instantly generate Ethereum and Solana wallets with mnemonic phrases.
+- Easily copy wallet addresses and manage wallets securely.
+
+## Tech Stack
+
+- **Next.js** - React framework for server-side rendering and static site generation
+- **ShadCN** - UI components for styling
+- **Solana Web3.js** - Solana blockchain interaction
+- **Ethers.js** - Ethereum blockchain interaction
+- **BIP39** - Mnemonic phrase generation and validation
+
+## Installation & Setup
+
+### Prerequisites
+
+Ensure you have **Node.js** and **Yarn/NPM** installed.
+
+### Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Smnthjm08/vault3.git
+cd vault3
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Run the Development Server
 
-## Learn More
+```bash
+npm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+The app will be available at `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Click on the **Ethereum** or **Solana** button to generate a wallet mnemonic.
+2. Securely store your secret phrase.
+3. Click **Create Wallet** to generate a wallet address.
+4. Copy or delete wallets as needed.
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Feel free to fork the repository and submit pull requests!
